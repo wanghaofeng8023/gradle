@@ -30,6 +30,7 @@ import java.io.File
 
 class TestFilesCleanupRootPlugin : Plugin<Project> {
     override fun apply(project: Project) {
+
         require(project.rootProject == project) { "This plugin should be applied to root project!" }
         val globalExtension = project.extensions.create<TestFilesCleanupBuildServiceRootExtension>("testFilesCleanupRoot")
         project.gradle.taskGraph.whenReady {

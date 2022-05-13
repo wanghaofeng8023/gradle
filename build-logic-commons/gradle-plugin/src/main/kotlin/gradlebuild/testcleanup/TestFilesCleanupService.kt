@@ -134,6 +134,9 @@ abstract class TestFilesCleanupService @Inject constructor(
     fun getExecutedTaskPaths(projectPath: String) = projectPathToExecutedTaskPaths.getOrDefault(projectPath, emptyList())
 
     override fun close() {
+        if ("Gradle_Master_Check_Platform_4_bucket49" == System.getenv("BUILD_TYPE_ID")) {
+            return
+        }
         val projectPathToLeftoverFiles = mutableMapOf<String, LeftoverFiles>()
         // First run: collect and archive leftover files
         parameters.projectStates.get().forEach { (projectPath: String, projectExtension: TestFileCleanUpExtension) ->
