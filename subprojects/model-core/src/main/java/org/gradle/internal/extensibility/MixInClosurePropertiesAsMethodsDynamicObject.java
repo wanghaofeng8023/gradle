@@ -55,7 +55,6 @@ public abstract class MixInClosurePropertiesAsMethodsDynamicObject extends Compo
             }
         }
 
-        result.addAdditionalContext(propertyResult);
         return result;
     }
 }
