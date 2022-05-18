@@ -78,6 +78,8 @@ import static com.google.common.collect.Sets.newIdentityHashSet;
 public class DefaultExecutionPlan implements ExecutionPlan, WorkSource<Node> {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultExecutionPlan.class);
 
+//    private static final String TS_FORMAT = java.time.LocalTime.now();
+
     private final Set<Node> entryNodes = new LinkedHashSet<>();
     private final NodeMapping nodeMapping = new NodeMapping();
     private final ExecutionQueue executionQueue = new ExecutionQueue();
@@ -631,6 +633,11 @@ public class DefaultExecutionPlan implements ExecutionPlan, WorkSource<Node> {
         executionQueue.restart();
         while (executionQueue.hasNext()) {
             Node node = executionQueue.next();
+            if (node.getClass().getSimpleName().contains("Transformation")) {
+                LOGGER.info("{} Selected transformation node {} which depends on {}", java.time.LocalTime.now(), node, node.getDependencySuccessors());
+            } else if (node instanceof LocalTaskNode && ":lifecycle:lifecycle-common:jar".equals(((LocalTaskNode) node).getTask().getPath())) {
+                LOGGER.info("{} Selected LTN :lifecycle:lifecycle-common:jar", java.time.LocalTime.now());
+            }
             if (node.allDependenciesComplete()) {
                 if (!node.allDependenciesSuccessful()) {
                     // Cannot execute this node due to failed dependencies - skip it
@@ -676,6 +683,11 @@ public class DefaultExecutionPlan implements ExecutionPlan, WorkSource<Node> {
                     executionQueue.remove();
                     return Selection.of(node);
                 }
+            }
+            if (node.getClass().getSimpleName().contains("Transformation")) {
+                LOGGER.info("{} ... but dependencies of transformation might not be complete {} which depends on {}", java.time.LocalTime.now(), node, node.getDependencySuccessors());
+            } else if (node instanceof LocalTaskNode && ":lifecycle:lifecycle-common:jar".equals(((LocalTaskNode) node).getTask().getPath())) {
+                LOGGER.info("{} ... but LTN :lifecycle:lifecycle-common:jar is not complete", java.time.LocalTime.now());
             }
             // Else, node is not yet complete
             // - its dependencies are not yet complete
@@ -919,6 +931,11 @@ public class DefaultExecutionPlan implements ExecutionPlan, WorkSource<Node> {
 
     @Override
     public void finishedExecuting(Node node, @Nullable Throwable failure) {
+        if (node.getClass().getSimpleName().contains("Transformation")) {
+            LOGGER.info("{} Finishing transformation node {} which depends on {}", java.time.LocalTime.now(), node, node.getDependencySuccessors());
+        } else if (node instanceof LocalTaskNode && ":lifecycle:lifecycle-common:jar".equals(((LocalTaskNode) node).getTask().getPath())) {
+            LOGGER.info("{} Finishing LTN :lifecycle:lifecycle-common:jar", java.time.LocalTime.now());
+        }
         lockCoordinator.assertHasStateLock();
         if (failure != null) {
             node.setExecutionFailure(failure);
