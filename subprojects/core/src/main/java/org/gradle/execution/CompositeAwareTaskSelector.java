@@ -77,19 +77,19 @@ public class CompositeAwareTaskSelector extends TaskSelector {
 
     @Override
     public TaskSelection getSelection(@Nullable String projectPath, @Nullable File root, String path) {
-        if (gradle.isRootBuild()) {
-            Path taskPath = Path.path(path);
-            if (taskPath.isAbsolute()) {
-                BuildState build = findIncludedBuild(taskPath);
-                if (build != null) {
-                    return getSelectorForChildBuild(build).getSelection(projectPath, root, taskPath.removeFirstSegments(1).toString());
-                }
-                build = findIncludedBuild(root);
-                if (build != null) {
-                    return getSelectorForChildBuild(build).getSelection(projectPath, root, path);
-                }
-            }
-        }
+//        if (gradle.isRootBuild()) {
+//            Path taskPath = Path.path(path);
+//            if (taskPath.isAbsolute()) {
+//                BuildState build = findIncludedBuild(taskPath);
+//                if (build != null) {
+//                    return getSelectorForChildBuild(build).getSelection(projectPath, root, taskPath.removeFirstSegments(1).toString());
+//                }
+//                build = findIncludedBuild(root);
+//                if (build != null) {
+//                    return getSelectorForChildBuild(build).getSelection(projectPath, root, path);
+//                }
+//            }
+//        }
 
         return getUnqualifiedBuildSelector().getSelection(projectPath, root, path);
     }
