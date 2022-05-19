@@ -34,6 +34,16 @@ configurations.transitiveSourcesElements {
 
 tasks {
     withType<KotlinCompile>().configureEach {
+        doFirst {
+            print("classpath:")
+            println(this@configureEach.classpathSnapshotProperties.classpath.files)
+            print("classpathSnapshot:")
+            println(this@configureEach.classpathSnapshotProperties.classpathSnapshot.files)
+            print("classpathSnapshotDir:")
+            println(this@configureEach.classpathSnapshotProperties.classpathSnapshotDir.get().asFile)
+            print("toolChainVersion:")
+            this@configureEach.kotlinJavaToolchainProvider.get().javaVersion
+        }
         configureKotlinCompilerForGradleBuild()
         if (name == "compileTestKotlin") {
             // Make sure the classes dir is used for test compilation (required by tests accessing internal methods) - https://github.com/gradle/gradle/issues/11501
