@@ -16,6 +16,7 @@
 
 package org.gradle.buildinit.tasks;
 
+import freemarker.template.TemplateException;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -43,15 +44,23 @@ import org.gradle.buildinit.plugins.internal.modifiers.Language;
 import org.gradle.buildinit.plugins.internal.modifiers.ModularizationOption;
 import org.gradle.internal.logging.text.TreeFormatter;
 import org.gradle.work.DisableCachingByDefault;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateExceptionHandler;
 
 import javax.annotation.Nullable;
 import javax.lang.model.SourceVersion;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.gradle.buildinit.plugins.internal.PackageNameBuilder.toPackageName;
@@ -211,7 +220,7 @@ public class InitBuild extends DefaultTask {
         if (getTemplate().isPresent()) {
             String url = getTemplate().get();
             getLogger().lifecycle("Cloning git repository: " + url);
-            cloneAndCleanGitRepository(url);
+            materializeTemplate(url);
             return;
         }
 
@@ -333,33 +342,74 @@ public class InitBuild extends DefaultTask {
         initDescriptor.getFurtherReading(settings).ifPresent(link -> getLogger().lifecycle("Get more help with your project: {}", link));
     }
 
-    private void cloneAndCleanGitRepository(String url) throws Exception {
-        File localRepoDir = projectDir.dir("localRepoDir").getAsFile();
+    private void materializeTemplate(String url) throws Exception {
+        File localRepoDir = getProject().getLayout().getBuildDirectory().dir("tmp/gitClone").get().getAsFile();
+        File targetDir = projectDir.getAsFile();
+        cloneRepositoryTo(url, localRepoDir);
+        Configuration configuration = loadFreemarkerConfiguration(localRepoDir);
+        Map<String, String> data = loadTemplateData();
+        processTemplates(targetDir, localRepoDir, configuration, data);
+        FileUtils.deleteDirectory(localRepoDir);
+    }
+
+    private static void processTemplates(File targetDir, File localRepoDir, Configuration freemarkerConfig, Map<String, String> data) throws IOException, TemplateException {
+        for (File file : FileUtils.listFiles(localRepoDir, null, true)) {
+            if (file.isFile()) {
+                URI fileUri = file.toURI();
+                URI baseUri = localRepoDir.toURI();
+                String relativePath = baseUri.relativize(fileUri).getPath();
+                if (!isIgnored(relativePath)) {
+                    if (file.getName().endsWith(".template")) {
+                        processTemplate(targetDir, freemarkerConfig, data, file, baseUri);
+                    } else {
+                        FileUtils.copyFile(file, new File(targetDir, relativePath));
+                    }
+                }
+            }
+        }
+    }
+
+    private static void processTemplate(File targetDir, Configuration freemarkerConfig, Map<String, String> data, File file, URI baseUri) throws IOException, TemplateException {
+        String targetFileName = file.getName().substring(0, file.getName().length() - 9);
+        URI templateUri = file.toURI();
+        URI generatedFileUri = new File(file.getParentFile(), targetFileName).toURI();
+        String generatedFileRelativePath = baseUri.relativize(generatedFileUri).getPath();
+        String templateRelativePath = baseUri.relativize(templateUri).getPath();
+        Template template = freemarkerConfig.getTemplate(templateRelativePath);
+        File targetFile = new File(targetDir, generatedFileRelativePath);
+        targetFile.getParentFile().mkdirs();
+        FileUtils.touch(targetFile);
+        Writer out = new OutputStreamWriter(new FileOutputStream(targetFile));
+        template.process(data, out, null);
+    }
+
+    private static boolean isIgnored(String relativePath) {
+        return relativePath.startsWith(".git") || relativePath.startsWith(".gradle") || Arrays.asList("gradlew", "gradlew.bat").contains(relativePath);
+    }
+
+    private Map<String, String> loadTemplateData() {
+        // TODO add result of questionnaire here
+        Map<String, String> data = new HashMap<>();
+        data.put("user", "Big Joe");
+        return data;
+    }
+
+    private static Configuration loadFreemarkerConfiguration(File localRepoDir) throws IOException {
+        Configuration cfg = new Configuration(Configuration.VERSION_2_3_29);
+        cfg.setDirectoryForTemplateLoading(localRepoDir);
+        cfg.setDefaultEncoding("UTF-8");
+        cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+        cfg.setLogTemplateExceptions(false);
+        cfg.setWrapUncheckedExceptions(true);
+        cfg.setFallbackOnNullLoopVariable(false);
+        return cfg;
+    }
+
+    private void cloneRepositoryTo(String url, File localRepoDir) throws GitAPIException {
         Git.cloneRepository()
             .setURI(url)
             .setDirectory(localRepoDir)
             .call();
-
-        FileUtils.copyDirectory(localRepoDir, projectDir.getAsFile(), file -> {
-            URI fileUri = file.toURI();
-            URI baseUri = localRepoDir.toURI();
-            String relativePath = baseUri.relativize(fileUri).getPath();
-
-            // filter git metadata
-            if (relativePath.startsWith(".git")) {
-                return false;
-            }
-            // filter Gradle working directory
-            if (relativePath.startsWith(".gradle")) {
-                return false;
-            }
-            // filter Gradle wrapper files
-            if (Arrays.asList("gradlew", "gradlew.bat").contains(relativePath)) {
-                return false;
-            }
-            return true;
-        });
-        FileUtils.deleteDirectory(localRepoDir);
     }
 
     @Option(option = "type", description = "Set the type of project to generate.")
