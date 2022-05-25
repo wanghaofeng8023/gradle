@@ -16,6 +16,7 @@
 
 package org.gradle.buildinit.tasks;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.gradle.api.DefaultTask;
@@ -45,6 +46,10 @@ import org.gradle.work.DisableCachingByDefault;
 
 import javax.annotation.Nullable;
 import javax.lang.model.SourceVersion;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -198,7 +203,7 @@ public class InitBuild extends DefaultTask {
     }
 
     @TaskAction
-    public void setupProjectLayout() {
+    public void setupProjectLayout() throws Exception {
         UserInputHandler inputHandler = getServices().get(UserInputHandler.class);
         ProjectLayoutSetupRegistry projectLayoutRegistry = getProjectLayoutRegistry();
 
@@ -206,14 +211,7 @@ public class InitBuild extends DefaultTask {
         if (getTemplate().isPresent()) {
             String url = getTemplate().get();
             getLogger().lifecycle("Cloning git repository: " + url);
-            try {
-                Git.cloneRepository()
-                    .setURI(url)
-                    .setDirectory(projectDir.getAsFile())
-                    .call();
-            } catch (GitAPIException e) {
-                throw new GradleException("Cloning " + url + "repository failed", e);
-            }
+            cloneAndCleanGitRepository(url);
             return;
         }
 
@@ -333,6 +331,35 @@ public class InitBuild extends DefaultTask {
         initDescriptor.generate(settings);
 
         initDescriptor.getFurtherReading(settings).ifPresent(link -> getLogger().lifecycle("Get more help with your project: {}", link));
+    }
+
+    private void cloneAndCleanGitRepository(String url) throws Exception {
+        File localRepoDir = projectDir.dir("localRepoDir").getAsFile();
+        Git.cloneRepository()
+            .setURI(url)
+            .setDirectory(localRepoDir)
+            .call();
+
+        FileUtils.copyDirectory(localRepoDir, projectDir.getAsFile(), file -> {
+            URI fileUri = file.toURI();
+            URI baseUri = localRepoDir.toURI();
+            String relativePath = baseUri.relativize(fileUri).getPath();
+
+            // filter git metadata
+            if (relativePath.startsWith(".git")) {
+                return false;
+            }
+            // filter Gradle working directory
+            if (relativePath.startsWith(".gradle")) {
+                return false;
+            }
+            // filter Gradle wrapper files
+            if (Arrays.asList("gradlew", "gradlew.bat").contains(relativePath)) {
+                return false;
+            }
+            return true;
+        });
+        FileUtils.deleteDirectory(localRepoDir);
     }
 
     @Option(option = "type", description = "Set the type of project to generate.")
