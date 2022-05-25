@@ -16,6 +16,8 @@
 
 package org.gradle.buildinit.tasks;
 
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.Incubating;
@@ -63,6 +65,7 @@ public class InitBuild extends DefaultTask {
     private String projectName;
     private String packageName;
     private final Property<InsecureProtocolOption> insecureProtocol = getProject().getObjects().property(InsecureProtocolOption.class);
+    private final Property<String> template = getProject().getObjects().property(String.class);
 
     @Internal
     private ProjectLayoutSetupRegistry projectLayoutRegistry;
@@ -121,6 +124,19 @@ public class InitBuild extends DefaultTask {
     @Option(option = "incubating", description = "Allow the generated build to use new features and APIs")
     public Property<Boolean> getUseIncubating() {
         return useIncubatingAPIs;
+    }
+
+    /**
+     * Target template URL.
+     * @return The template URL.
+     * @since 7.6
+     */
+    @Input
+    @Optional
+    @Incubating
+    @Option(option = "template", description = "Return the template url to generate the target project from")
+    public Property<String> getTemplate() {
+        return template;
     }
 
     /**
@@ -185,6 +201,21 @@ public class InitBuild extends DefaultTask {
     public void setupProjectLayout() {
         UserInputHandler inputHandler = getServices().get(UserInputHandler.class);
         ProjectLayoutSetupRegistry projectLayoutRegistry = getProjectLayoutRegistry();
+
+
+        if (getTemplate().isPresent()) {
+            String url = getTemplate().get();
+            getLogger().lifecycle("Cloning git repository: " + url);
+            try {
+                Git.cloneRepository()
+                    .setURI(url)
+                    .setDirectory(projectDir.getAsFile())
+                    .call();
+            } catch (GitAPIException e) {
+                throw new GradleException("Cloning " + url + "repository failed", e);
+            }
+            return;
+        }
 
         BuildInitializer initDescriptor = null;
         if (isNullOrEmpty(type)) {

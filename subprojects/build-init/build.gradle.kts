@@ -30,6 +30,7 @@ dependencies {
     implementation(libs.commonsLang)
     implementation(libs.inject)
     implementation(libs.maven3SettingsBuilder)
+    implementation(libs.jgit)
 
     compileOnly(libs.maven3Compat)
     compileOnly(libs.maven3PluginApi)
