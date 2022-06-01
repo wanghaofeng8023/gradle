@@ -40,5 +40,10 @@ repositories {
             includeGroup("io.usethesource")
         }
     }
+    mavenLocal {
+        mavenContent {
+            includeGroup("org.spockframework")
+        }
+    }
     mavenCentral()
 }
