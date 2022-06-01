@@ -1373,6 +1373,21 @@ class DefaultExecutionPlanParallelTest extends AbstractExecutionPlanSpec {
         node4.task == mustRunAfter
     }
 
+    def "something"() {
+        Task dependency = task("dependency", type: Async)
+        Task finalizer = task("finalizer", type: Async, dependsOn: [dependency])
+        Task finalized = task("finalized", type: Async, finalizedBy: [finalizer], mustRunAfter: [dependency])
+
+        when:
+        addToGraph(finalized)
+        populateGraph()
+
+        then:
+        assertTaskReady(dependency)
+        assertTaskReady(finalized)
+        assertTaskReadyAndNoMoreToStart(finalizer)
+    }
+
     def "handles an exception while walking the task graph when an enforced task is present"() {
         given:
         Task finalizer = task("finalizer", type: BrokenTask)

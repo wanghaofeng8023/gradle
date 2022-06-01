@@ -212,6 +212,9 @@ public class DefaultExecutionPlan implements ExecutionPlan, WorkSource<Node> {
                         queue.addFirst(successor);
                     }
                 }
+                for (Node successor : node.getHardSuccessors()) {
+                    successor.maybeInheritOrdinalAsDependency(node.getGroup());
+                }
             } else {
                 // Have visited this node's dependencies - add it to the graph
                 queue.removeFirst();
