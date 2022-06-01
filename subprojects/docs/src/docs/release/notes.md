@@ -19,6 +19,8 @@ We would like to thank the following community members for their contributions t
 
 ## Upgrade instructions
 
+
+
 Switch your build to use Gradle @version@ by updating your wrapper:
 
 `./gradlew wrapper --gradle-version=@version@`
