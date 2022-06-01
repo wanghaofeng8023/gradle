@@ -17,6 +17,7 @@
 package org.gradle.integtests.fixtures.extensions
 
 
+import org.gradle.integtests.fixtures.RequiredFeature
 import org.junit.Rule
 import org.junit.rules.ExternalResource
 import spock.lang.Specification
@@ -41,7 +42,12 @@ class MultiTestLifecycleSpec extends Specification {
             "rule before", "setup", "unrolled test: 1: isFluid: false", "cleanup", "rule after",
             "rule before", "setup", "unrolled test: 1: isFluid: true", "cleanup", "rule after",
             "rule before", "setup", "unrolled test: 2: isFluid: false", "cleanup", "rule after",
-            "rule before", "setup", "unrolled test: 2: isFluid: true", "cleanup", "rule after"
+            "rule before", "setup", "unrolled test: 2: isFluid: true", "cleanup", "rule after",
+            "rule before", "setup", "unrolled test: 3: isFluid: false", "cleanup", "rule after",
+            "rule before", "setup", "unrolled test: 3: isFluid: true", "cleanup", "rule after",
+            "rule before", "setup", "unrolled test with required: 1: isFluid: true", "cleanup", "rule after",
+            "rule before", "setup", "unrolled test with required: 2: isFluid: true", "cleanup", "rule after",
+            "rule before", "setup", "unrolled test with required: 3: isFluid: true", "cleanup", "rule after"
         ])
     }
 
@@ -59,13 +65,23 @@ class MultiTestLifecycleSpec extends Specification {
         true
     }
 
-    def unrolled() {
+    def "unrolled foo: #foo"() {
         LIFECYCLE.pushEvent("unrolled test: $foo: isFluid: ${FluidDependenciesResolveInterceptor.isFluid()}")
         expect:
         true
 
         where:
-        foo << [1, 2]
+        foo << [1, 2, 3]
+    }
+
+    @RequiredFeature(feature = FluidDependenciesResolveInterceptor.ASSUME_FLUID_DEPENDENCIES, value = "true")
+    def "unrolled foo with required: #foo"() {
+        LIFECYCLE.pushEvent("unrolled test with required: $foo: isFluid: ${FluidDependenciesResolveInterceptor.isFluid()}")
+        expect:
+        true
+
+        where:
+        foo << [1, 2, 3]
     }
 
     static class SampleRule extends ExternalResource {
