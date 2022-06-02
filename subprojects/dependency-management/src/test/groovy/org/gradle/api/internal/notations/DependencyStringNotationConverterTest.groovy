@@ -92,7 +92,7 @@ class DependencyStringNotationConverterTest extends Specification {
         d.artifacts.size() == 1
         d.artifacts.find {
             it.name == 'gradle-core' && it.classifier == 'jdk-1.4' &&
-                it.type == DependencyArtifact.DEFAULT_TYPE && it.extension == DependencyArtifact.DEFAULT_TYPE
+                it.type == DependencyArtifact.DEFAULT_TYPE && it.extension == null
         }
     }
 

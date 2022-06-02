@@ -39,8 +39,8 @@ class MissingLocalArtifactMetadataTest extends Specification {
         withClassifier.toString() == "name-classifier.ext (<comp>)"
 
         def noExtension = localArtifactIdentifier(componentId, "name", "type", null, 'classifier')
-        noExtension.displayName == "name-classifier (<comp>)"
-        noExtension.toString() == "name-classifier (<comp>)"
+        noExtension.displayName == "name-classifier.type (<comp>)"
+        noExtension.toString() == "name-classifier.type (<comp>)"
     }
 
     def "is equal when all attributes and module version are the same"() {

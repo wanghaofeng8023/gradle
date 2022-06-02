@@ -35,12 +35,12 @@ class DefaultModuleComponentArtifactIdentifierTest extends Specification {
         withClassifier.toString() == "name-version-classifier.ext (group:module:version)"
 
         def noExtension = new DefaultModuleComponentArtifactIdentifier(componentId, "name", "type", null, 'classifier')
-        noExtension.displayName == "name-version-classifier (group:module:version)"
-        noExtension.toString() == "name-version-classifier (group:module:version)"
+        noExtension.displayName == "name-version-classifier.type (group:module:version)"
+        noExtension.toString() == "name-version-classifier.type (group:module:version)"
 
         def nameOnly = new DefaultModuleComponentArtifactIdentifier(componentId, "name", "type", null, null)
-        nameOnly.displayName == "name-version (group:module:version)"
-        nameOnly.toString() == "name-version (group:module:version)"
+        nameOnly.displayName == "name-version.type (group:module:version)"
+        nameOnly.toString() == "name-version.type (group:module:version)"
     }
 
     def "has same string representation as a ComponentFileArtifactIdentifier that carries the same information"() {
@@ -56,11 +56,11 @@ class DefaultModuleComponentArtifactIdentifierTest extends Specification {
         withClassifier.displayName == withClassifierFileName.displayName
 
         def noExtension = new DefaultModuleComponentArtifactIdentifier(componentId, "name", "type", null, 'classifier')
-        def noExtensionFileName = new ComponentFileArtifactIdentifier(componentId, "name-version-classifier")
+        def noExtensionFileName = new ComponentFileArtifactIdentifier(componentId, "name-version-classifier.type")
         noExtension.displayName == noExtensionFileName.displayName
 
         def nameOnly = new DefaultModuleComponentArtifactIdentifier(componentId, "name", "type", null, null)
-        def nameOnlyFileName = new ComponentFileArtifactIdentifier(componentId, "name-version")
+        def nameOnlyFileName = new ComponentFileArtifactIdentifier(componentId, "name-version.type")
         nameOnly.displayName == nameOnlyFileName.displayName
     }
 
@@ -77,10 +77,10 @@ class DefaultModuleComponentArtifactIdentifierTest extends Specification {
         withClassifier.fileName == "name-version-classifier.ext"
 
         def noExtension = new DefaultModuleComponentArtifactIdentifier(componentId, "name", "type", null, 'classifier')
-        noExtension.fileName == "name-version-classifier"
+        noExtension.fileName == "name-version-classifier.type"
 
         def nameOnly = new DefaultModuleComponentArtifactIdentifier(componentId, "name", "type", null, null)
-        nameOnly.fileName == "name-version"
+        nameOnly.fileName == "name-version.type"
     }
 
     def "is equal when all attributes and module version are the same"() {

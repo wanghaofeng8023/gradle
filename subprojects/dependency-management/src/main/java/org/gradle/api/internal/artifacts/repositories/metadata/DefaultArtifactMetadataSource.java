@@ -103,7 +103,7 @@ public class DefaultArtifactMetadataSource extends AbstractMetadataSource<Mutabl
     }
 
     /**
-     * If there is prescribed metadata and it has an artifact, return it. Otherwise, default to using the jar artifact.
+     * If there is prescribed metadata, and it has an artifact, return it. Otherwise, default to using the jar artifact.
      */
     public static class JarDefaultingArtifactSupplier implements ArtifactSupplier {
         @Override
