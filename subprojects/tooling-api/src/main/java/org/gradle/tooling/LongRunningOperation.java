@@ -120,6 +120,15 @@ public interface LongRunningOperation {
      */
     LongRunningOperation addJvmArguments(String... jvmArguments);
 
+
+    /**
+     * Sets system property filers todo.
+     * @param systemProperties
+     * @return  this
+     * @since 7.6
+     */
+    LongRunningOperation withSystemProperties(Map<String, ?> systemProperties);
+
     /**
      * Appends Java VM arguments to the existing list.
      *

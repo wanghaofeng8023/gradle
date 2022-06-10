@@ -171,4 +171,10 @@ public interface ProviderOperationParameters {
      * @since 2.8-rc-1
      */
     List<File> getInjectedPluginClasspath();
+
+    /**
+     * @return A filter for the system properties. If the filtered system property is present in the Tooling API client it should not be available in the Gradle daemon.
+     * @since 7.6
+     */
+    Map<String, ?> getSystemProperties();
 }

@@ -27,6 +27,8 @@ import org.gradle.launcher.exec.BuildActionResult;
 import org.gradle.launcher.exec.DefaultBuildActionParameters;
 import org.gradle.tooling.internal.provider.connection.ProviderOperationParameters;
 
+import java.util.Map;
+
 public class DaemonBuildActionExecuter implements BuildActionExecuter<ConnectionOperationParameters, BuildRequestContext> {
     private final BuildActionExecuter<BuildActionParameters, BuildRequestContext> executer;
 
@@ -40,7 +42,13 @@ public class DaemonBuildActionExecuter implements BuildActionExecuter<Connection
         ClassPath classPath = DefaultClassPath.of(operationParameters.getInjectedPluginClasspath());
 
         DaemonParameters daemonParameters = parameters.getDaemonParameters();
-        BuildActionParameters actionParameters = new DefaultBuildActionParameters(daemonParameters.getEffectiveSystemProperties(), daemonParameters.getEnvironmentVariables(), SystemProperties.getInstance().getCurrentDir(), operationParameters.getBuildLogLevel(), daemonParameters.isEnabled(), classPath);
+        Map<String, String> effectiveSystemProperties;
+        if (operationParameters.getSystemProperties() != null && !operationParameters.getSystemProperties().isEmpty()) {
+            effectiveSystemProperties = daemonParameters.getEffectiveSystemProperties(operationParameters.getSystemProperties());
+        } else {
+            effectiveSystemProperties = daemonParameters.getEffectiveSystemProperties();
+        }
+        BuildActionParameters actionParameters = new DefaultBuildActionParameters(effectiveSystemProperties, daemonParameters.getEnvironmentVariables(), SystemProperties.getInstance().getCurrentDir(), operationParameters.getBuildLogLevel(), daemonParameters.isEnabled(), classPath);
         return executer.execute(action, actionParameters, buildRequestContext);
     }
 }
