@@ -48,26 +48,178 @@ import java.util.Map;
 @Incubating
 public interface JvmComponentDependencies {
 
-    // Easily-usable methods for commonly used dependency notations
-    void implementation(String dependencyNotation);
-    void implementation(String dependencyNotation, Action<? super ExternalModuleDependency> configuration);
-    void implementation(Map<String, ?> dependencyNotation);
-    void implementation(Map<String, ?> dependencyNotation, Action<? super ExternalModuleDependency> configuration);
-    void implementation(Project dependencyNotation);
-    void implementation(Project dependencyNotation, Action<? super ProjectDependency> configuration);
-    void implementation(FileCollection dependencyNotation);
-    void implementation(FileCollection dependencyNotation, Action<? super FileCollectionDependency> configuration);
-    // Note that these are specifically typed to MinimalExternalModuleDependency, because they're only for version catalog
-    // If a user wants to Provider a different type of dependency, the more verbose mechanism below should be used.
-    void implementation(Provider<? extends MinimalExternalModuleDependency> dependencyNotation);
-    void implementation(Provider<? extends MinimalExternalModuleDependency> dependencyNotation, Action<? super ExternalModuleDependency> configuration);
-    void implementation(ProviderConvertible<? extends MinimalExternalModuleDependency> dependencyNotation);
-    void implementation(ProviderConvertible<? extends MinimalExternalModuleDependency> dependencyNotation, Action<? super ExternalModuleDependency> configuration);
-    // Generic dependency notation methods
-    void implementation(Dependency dependencyNotation);
-    <D extends Dependency> void implementation(D dependencyNotation, Action<? super D> configuration);
-    void implementation(DependencyProvider<?> dependencyNotation);
-    <D extends Dependency> void implementation(DependencyProvider<? extends D> dependencyNotation, Action<? super D> configuration);
+    /**
+     * Add a dependency to the set of implementation dependencies.
+     * <p><br>
+     * <code>implementation</code> dependencies are used at compilation and runtime.
+     *
+     * @param dependencyNotation dependency to add
+     * @see DependencyFactory#createFromCharSequence(CharSequence) Valid dependency notation for this method
+     * @since 7.6
+     */
+    void implementation(CharSequence dependencyNotation);
+
+    /**
+     * Add a dependency to the set of implementation dependencies.
+     * <p><br>
+     * <code>implementation</code> dependencies are used at compilation and runtime.
+     *
+     * @param dependencyNotation dependency to add
+     * @param configuration an action to configure the dependency
+     * @see DependencyFactory#createFromCharSequence(CharSequence) Valid dependency notation for this method
+     * @since 7.6
+     */
+    void implementation(CharSequence dependencyNotation, Action<? super ExternalModuleDependency> configuration);
+
+    /**
+     * Add a dependency to the set of implementation dependencies.
+     * <p><br>
+     * <code>implementation</code> dependencies are used at compilation and runtime.
+     *
+     * @param map a map of configuration parameters for the dependency
+     * @see DependencyFactory#createFromMap(Map) Valid dependency notation for this method
+     * @since 7.6
+     */
+    void implementation(Map<String, ?> map);
+
+    /**
+     * Add a dependency to the set of implementation dependencies.
+     * <p><br>
+     * <code>implementation</code> dependencies are used at compilation and runtime.
+     *
+     * @param map a map of configuration parameters for the dependency
+     * @param configuration an action to configure the dependency
+     * @see DependencyFactory#createFromMap(Map) Valid dependency notation for this method
+     * @since 7.6
+     */
+    void implementation(Map<String, ?> map, Action<? super ExternalModuleDependency> configuration);
+
+    /**
+     * Add a dependency to the set of implementation dependencies.
+     * <p><br>
+     * <code>implementation</code> dependencies are used at compilation and runtime.
+     *
+     * @param project project to add as a dependency
+     * @since 7.6
+     */
+    void implementation(Project project);
+
+    /**
+     * Add a dependency to the set of implementation dependencies.
+     * <p><br>
+     * <code>implementation</code> dependencies are used at compilation and runtime.
+     *
+     * @param project project to add as a dependency
+     * @param configuration an action to configure the dependency
+     * @since 7.6
+     */
+    void implementation(Project project, Action<? super ProjectDependency> configuration);
+
+    /**
+     * Add a dependency to the set of implementation dependencies.
+     * <p><br>
+     * <code>implementation</code> dependencies are used at compilation and runtime.
+     *
+     * @param files files to add as a dependency
+     * @since 7.6
+     */
+    void implementation(FileCollection files);
+
+    /**
+     * Add a dependency to the set of implementation dependencies.
+     * <p><br>
+     * <code>implementation</code> dependencies are used at compilation and runtime.
+     *
+     * @param files files to add as a dependency
+     * @param configuration an action to configure the dependency
+     * @since 7.6
+     */
+    void implementation(FileCollection files, Action<? super FileCollectionDependency> configuration);
+
+    /**
+     * Add a dependency to the set of implementation dependencies.
+     * <p><br>
+     * <code>implementation</code> dependencies are used at compilation and runtime.
+     *
+     * @param externalModule external module to add as a dependency
+     * @since 7.6
+     */
+    void implementation(Provider<? extends MinimalExternalModuleDependency> externalModule);
+
+    /**
+     * Add a dependency to the set of implementation dependencies.
+     * <p><br>
+     * <code>implementation</code> dependencies are used at compilation and runtime.
+     *
+     * @param externalModule external module to add as a dependency
+     * @param configuration an action to configure the dependency
+     * @since 7.6
+     */
+    void implementation(Provider<? extends MinimalExternalModuleDependency> externalModule, Action<? super ExternalModuleDependency> configuration);
+
+    /**
+     * Add a dependency to the set of implementation dependencies.
+     * <p><br>
+     * <code>implementation</code> dependencies are used at compilation and runtime.
+     *
+     * @param externalModule external module to add as a dependency
+     * @since 7.6
+     *
+     */
+    void implementation(ProviderConvertible<? extends MinimalExternalModuleDependency> externalModule);
+
+    /**
+     * Add a dependency to the set of implementation dependencies.
+     * <p><br>
+     * <code>implementation</code> dependencies are used at compilation and runtime.
+     *
+     * @param externalModule external module to add as a dependency
+     * @param configuration an action to configure the dependency
+     * @since 7.6
+     */
+    void implementation(ProviderConvertible<? extends MinimalExternalModuleDependency> externalModule, Action<? super ExternalModuleDependency> configuration);
+
+    /**
+     * Add a dependency to the set of implementation dependencies.
+     * <p><br>
+     * <code>implementation</code> dependencies are used at compilation and runtime.
+     *
+     * @param dependency dependency to add
+     * @since 7.6
+     */
+    void implementation(Dependency dependency);
+
+    /**
+     * Add a dependency to the set of implementation dependencies.
+     * <p><br>
+     * <code>implementation</code> dependencies are used at compilation and runtime.
+     *
+     * @param dependency dependency to add
+     * @param configuration an action to configure the dependency
+     * @since 7.6
+     */
+    <D extends Dependency> void implementation(D dependency, Action<? super D> configuration);
+
+    /**
+     * Add a dependency to the set of implementation dependencies.
+     * <p><br>
+     * <code>implementation</code> dependencies are used at compilation and runtime.
+     *
+     * @param dependency dependency to add
+     * @since 7.6
+     */
+    void implementation(DependencyProvider<?> dependency);
+
+    /**
+     * Add a dependency to the set of implementation dependencies.
+     * <p><br>
+     * <code>implementation</code> dependencies are used at compilation and runtime.
+     *
+     * @param dependency dependency to add
+     * @param configuration an action to configure the dependency
+     * @since 7.6
+     */
+    <D extends Dependency> void implementation(DependencyProvider<? extends D> dependency, Action<? super D> configuration);
 
     /**
      * Add a dependency to the set of compileOnly dependencies.

@@ -200,8 +200,6 @@ public abstract class DefaultProject extends AbstractPluginAware implements Proj
 
     private DependencyHandler dependencyHandler;
 
-    private DependencyFactory dependencyFactory;
-
     private ConfigurationContainer configurationContainer;
 
     private ArtifactHandler artifactHandler;
@@ -1032,12 +1030,8 @@ public abstract class DefaultProject extends AbstractPluginAware implements Proj
     }
 
     @Override
-    public DependencyFactory getDependencyFactory() {
-        if (dependencyFactory == null) {
-            dependencyFactory = services.get(DependencyFactory.class);
-        }
-        return dependencyFactory;
-    }
+    @Inject
+    public abstract DependencyFactory getDependencyFactory();
 
     public void setDependencyHandler(DependencyHandler dependencyHandler) {
         this.dependencyHandler = dependencyHandler;

@@ -69,53 +69,53 @@ public class DefaultJvmComponentDependencies implements JvmComponentDependencies
         throw new UnsupportedOperationException();
     }
     @Override
-    public void implementation(String dependencyNotation) {
-        doAddEager(implementation, getDependencyFactory().fromCharSequence(dependencyNotation), null);
+    public void implementation(CharSequence dependencyNotation) {
+        doAddEager(implementation, getDependencyFactory().createFromCharSequence(dependencyNotation), null);
     }
 
     @Override
-    public void implementation(String dependencyNotation, Action<? super ExternalModuleDependency> configuration) {
-        doAddEager(implementation, getDependencyFactory().fromCharSequence(dependencyNotation), dependency -> configuration.execute((ExternalModuleDependency) dependency));
+    public void implementation(CharSequence dependencyNotation, Action<? super ExternalModuleDependency> configuration) {
+        doAddEager(implementation, getDependencyFactory().createFromCharSequence(dependencyNotation), dependency -> configuration.execute((ExternalModuleDependency) dependency));
     }
 
     @Override
     public void implementation(Map<String, ?> dependencyNotation) {
-        doAddEager(implementation, getDependencyFactory().fromMap(dependencyNotation), null);
+        doAddEager(implementation, getDependencyFactory().createFromMap(dependencyNotation), null);
     }
 
     @Override
     public void implementation(Map<String, ?> dependencyNotation, Action<? super ExternalModuleDependency> configuration) {
-        doAddEager(implementation, getDependencyFactory().fromMap(dependencyNotation), dependency -> configuration.execute((ExternalModuleDependency) dependency));
+        doAddEager(implementation, getDependencyFactory().createFromMap(dependencyNotation), dependency -> configuration.execute((ExternalModuleDependency) dependency));
     }
 
     @Override
     public void implementation(Project dependencyNotation) {
-        doAddEager(implementation, getDependencyFactory().fromProject(dependencyNotation), null);
+        doAddEager(implementation, getDependencyFactory().createFromProject(dependencyNotation), null);
     }
 
     @Override
     public void implementation(Project dependencyNotation, Action<? super ProjectDependency> configuration) {
-        doAddEager(implementation, getDependencyFactory().fromProject(dependencyNotation), dependency -> configuration.execute((ProjectDependency) dependency));
+        doAddEager(implementation, getDependencyFactory().createFromProject(dependencyNotation), dependency -> configuration.execute((ProjectDependency) dependency));
     }
 
     @Override
     public void implementation(FileCollection dependencyNotation) {
-        doAddEager(implementation, getDependencyFactory().fromFileCollection(dependencyNotation), null);
+        doAddEager(implementation, getDependencyFactory().createFromFileCollection(dependencyNotation), null);
     }
 
     @Override
     public void implementation(FileCollection dependencyNotation, Action<? super FileCollectionDependency> configuration) {
-        doAddEager(implementation, getDependencyFactory().fromFileCollection(dependencyNotation), dependency -> configuration.execute((FileCollectionDependency) dependency));
+        doAddEager(implementation, getDependencyFactory().createFromFileCollection(dependencyNotation), dependency -> configuration.execute((FileCollectionDependency) dependency));
     }
 
     @Override
     public void implementation(Provider<? extends MinimalExternalModuleDependency> dependencyNotation) {
-        doAddLazy(implementation, getDependencyFactory().fromMinimal(dependencyNotation), null);
+        doAddLazy(implementation, getDependencyFactory().createFromExternalModule(dependencyNotation), null);
     }
 
     @Override
     public void implementation(Provider<? extends MinimalExternalModuleDependency> dependencyNotation, Action<? super ExternalModuleDependency> configuration) {
-        doAddLazy(implementation, getDependencyFactory().fromMinimal(dependencyNotation), dependency -> configuration.execute((ExternalModuleDependency) dependency));
+        doAddLazy(implementation, getDependencyFactory().createFromExternalModule(dependencyNotation), dependency -> configuration.execute((ExternalModuleDependency) dependency));
     }
 
     @Override

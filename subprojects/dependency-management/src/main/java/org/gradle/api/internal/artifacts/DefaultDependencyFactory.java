@@ -120,33 +120,33 @@ public class DefaultDependencyFactory implements DependencyFactoryInternal {
     // region DependencyFactory methods
 
     @Override
-    public ExternalModuleDependency fromCharSequence(CharSequence dependencyNotation) {
+    public ExternalModuleDependency createFromCharSequence(CharSequence dependencyNotation) {
         return dependencyNotationParser.getStringNotationParser().parseNotation(dependencyNotation.toString());
     }
 
     @Override
-    public ExternalModuleDependency fromMinimal(MinimalExternalModuleDependency dependencyNotation) {
-        return dependencyNotationParser.getMinimalExternalModuleDependencyNotationParser().parseNotation(dependencyNotation);
+    public ExternalModuleDependency createFromExternalModule(MinimalExternalModuleDependency externalModule) {
+        return dependencyNotationParser.getMinimalExternalModuleDependencyNotationParser().parseNotation(externalModule);
     }
 
     @Override
-    public ExternalModuleDependency fromMap(Map<String, ?> dependencyNotation) {
-        return dependencyNotationParser.getMapNotationParser().parseNotation(dependencyNotation);
+    public ExternalModuleDependency createFromMap(Map<String, ?> map) {
+        return dependencyNotationParser.getMapNotationParser().parseNotation(map);
     }
 
     @Override
-    public FileCollectionDependency fromFileCollection(FileCollection dependencyNotation) {
-        return dependencyNotationParser.getFileCollectionNotationParser().parseNotation(dependencyNotation);
+    public FileCollectionDependency createFromFileCollection(FileCollection fileCollection) {
+        return dependencyNotationParser.getFileCollectionNotationParser().parseNotation(fileCollection);
     }
 
     @Override
-    public ProjectDependency fromProject(Project dependencyNotation) {
-        return dependencyNotationParser.getProjectNotationParser().parseNotation(dependencyNotation);
+    public ProjectDependency createFromProject(Project project) {
+        return dependencyNotationParser.getProjectNotationParser().parseNotation(project);
     }
 
     @Override
-    public <D extends Dependency> DependencyProvider<D> fromDependency(Provider<D> dependencyNotation) {
-        return new DefaultDependencyProvider<>((ProviderInternal<D>) dependencyNotation);
+    public <D extends Dependency> DependencyProvider<D> createFromProvider(Provider<D> dependencyProvider) {
+        return new DefaultDependencyProvider<>((ProviderInternal<D>) dependencyProvider);
     }
 
     // endregion

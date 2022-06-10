@@ -16,6 +16,7 @@
 
 package org.gradle.api.artifacts.dsl;
 
+import org.gradle.api.Incubating;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.provider.Provider;
 
@@ -26,6 +27,9 @@ import org.gradle.api.provider.Provider;
  * <p>
  * <b>Note:</b> This interface is not intended for implementation by build script or plugin authors.
  * </p>
+ *
+ * @since 7.6
  */
+@Incubating
 public interface DependencyProvider<D extends Dependency> extends Provider<D> {
 }
