@@ -45,6 +45,7 @@ import org.gradle.buildinit.plugins.internal.modifiers.ComponentType;
 import org.gradle.buildinit.plugins.internal.modifiers.Language;
 import org.gradle.buildinit.plugins.internal.modifiers.ModularizationOption;
 import org.gradle.internal.logging.text.TreeFormatter;
+import org.gradle.util.GradleVersion;
 import org.gradle.work.DisableCachingByDefault;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -391,6 +392,7 @@ public class InitBuild extends DefaultTask {
         }
 
         HashMap<String, Object> finalData = new HashMap<>(data);
+        finalData.put("gradleVersion", new TemplateGradleVersion());
         if (hasMetadata) {
             String paramTemplateName = file.getName() + ".GradleTemplate.params.txt.template"; // TODO use relative path to avoid template caching
             File paramsTemplateFile = new File(localRepoDir, paramTemplateName); // TODO check for collisions
