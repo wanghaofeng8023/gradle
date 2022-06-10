@@ -16,7 +16,6 @@
 package org.gradle.api.internal.notations;
 
 import org.gradle.api.artifacts.FileCollectionDependency;
-import org.gradle.api.artifacts.SelfResolvingDependency;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.artifacts.dependencies.DefaultSelfResolvingDependency;
 import org.gradle.internal.exceptions.DiagnosticsVisitor;

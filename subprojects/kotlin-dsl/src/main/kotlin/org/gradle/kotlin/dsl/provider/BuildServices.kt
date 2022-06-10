@@ -53,13 +53,13 @@ object BuildServices {
 
     @Suppress("unused")
     fun createKotlinScriptClassPathProvider(
-            moduleRegistry: ModuleRegistry,
-            classPathRegistry: ClassPathRegistry,
-            classLoaderScopeRegistry: ClassLoaderScopeRegistry,
-            dependencyFactory: DependencyFactoryInternal,
-            jarCache: GeneratedGradleJarCache,
-            temporaryFileProvider: TemporaryFileProvider,
-            progressLoggerFactory: ProgressLoggerFactory
+        moduleRegistry: ModuleRegistry,
+        classPathRegistry: ClassPathRegistry,
+        classLoaderScopeRegistry: ClassLoaderScopeRegistry,
+        dependencyFactory: DependencyFactoryInternal,
+        jarCache: GeneratedGradleJarCache,
+        temporaryFileProvider: TemporaryFileProvider,
+        progressLoggerFactory: ProgressLoggerFactory
     ) =
 
         KotlinScriptClassPathProvider(

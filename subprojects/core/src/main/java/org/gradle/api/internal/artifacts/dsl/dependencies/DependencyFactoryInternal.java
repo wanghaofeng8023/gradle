@@ -21,7 +21,6 @@ import org.gradle.api.artifacts.DependencyConstraint;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.ProjectDependency;
 import org.gradle.api.artifacts.dsl.DependencyFactory;
-import org.gradle.api.artifacts.dsl.DependencyProvider;
 
 import java.util.Map;
 

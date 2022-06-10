@@ -28,6 +28,7 @@ import org.gradle.api.provider.Provider;
  * <b>Note:</b> This interface is not intended for implementation by build script or plugin authors.
  * </p>
  *
+ * @param <D> the dependency type
  * @since 7.6
  */
 @Incubating
