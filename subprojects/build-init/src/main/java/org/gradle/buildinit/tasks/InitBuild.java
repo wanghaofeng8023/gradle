@@ -417,12 +417,12 @@ public class InitBuild extends DefaultTask {
             FileUtils.writeLines(file, lines.subList(endLine + 1, lines.size()));
         }
 
-        Object onlyIf = finalData.get("onlyIf");
-        if (onlyIf == null || "true".equals(onlyIf)) {
+        Object skip = finalData.get("skip");
+        if (skip == null || !"true".equals(skip)) {
             String targetFileName = file.getName().substring(0, file.getName().length() - 9);
             URI templateUri = file.toURI();
             URI generatedFileUri = new File(file.getParentFile(), targetFileName).toURI();
-            String fileName = (String) finalData.get("targetFile");
+            String fileName = (String) finalData.get("file");
             String generatedFileRelativePath =  fileName == null ? baseUri.relativize(generatedFileUri).getPath() : fileName;
             String templateRelativePath = baseUri.relativize(templateUri).getPath();
             Template template = freemarkerConfig.getTemplate(templateRelativePath);
