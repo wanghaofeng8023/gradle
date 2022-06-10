@@ -1542,6 +1542,13 @@ public interface Project extends Comparable<Project>, ExtensionAware, PluginAwar
      */
     void dependencies(Closure configureClosure);
 
+    /**
+     * Provides access to methods to create various kinds of {@link org.gradle.api.artifacts.Dependency Dependency} instances.
+     *
+     * @return the dependency factory. Never returns null.
+     * @since 7.6
+     */
+    @Incubating
     DependencyFactory getDependencyFactory();
 
     /**
