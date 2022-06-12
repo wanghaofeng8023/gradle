@@ -54,11 +54,19 @@ class GradleEnterprisePluginCheckInFixture {
         this.pluginBuildExecuter = pluginBuildExecuter
     }
 
+    String pluginRepository() {
+        return "maven { url '${mavenRepo.uri}' }"
+    }
+
+    String pluginDependency() {
+        return "id '$id' version '$runtimeVersion'"
+    }
+
     String pluginManagement() {
         """
             pluginManagement {
                 repositories {
-                    maven { url '${mavenRepo.uri}' }
+                    ${pluginRepository()}
                 }
             }
         """
@@ -66,7 +74,7 @@ class GradleEnterprisePluginCheckInFixture {
 
     String plugins() {
         """
-            plugins { id "$id" version "$runtimeVersion" }
+            plugins { ${pluginDependency()} }
         """
     }
 

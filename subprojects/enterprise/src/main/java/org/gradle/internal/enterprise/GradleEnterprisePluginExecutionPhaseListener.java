@@ -17,15 +17,23 @@
 package org.gradle.internal.enterprise;
 
 /**
- * Used to signal a start of the execution phase to the plugin.
- *
- * Expected to be invoked at most once for a build tree, isn't invoked if the configuration phase fails.
- * The configuration cache doesn't affect this callback, it is invoked regardless of the cache entry being reused.
+ * Tracks the execution of main tasks of a build tree, also known as
+ * <a href="https://docs.gradle.org/current/userguide/build_lifecycle.html#sec:build_phases">the "execution phase"</a>.
+ * The tasks of the included builds that contribute project and settings plugins, and tasks of the buildSrc build
+ * run before the execution phase, at the configuration phase.
  *
  * Implemented by the Enterprise plugin.
  *
  * @see org.gradle.internal.operations.BuildOperationCategory#RUN_MAIN_TASKS
  */
 public interface GradleEnterprisePluginExecutionPhaseListener {
+    /**
+     * Used to signal a start of the execution of main tasks of a build tree, also known as the "execution phase".
+     * At this point the configuration phase is already completed.
+     * This callback is invoked before any of the tasks of the execution phase start.
+     *
+     * Expected to be invoked at most once for a build tree, isn't invoked if the configuration phase fails.
+     * The configuration cache doesn't affect this callback, it is invoked regardless of the cache entry being reused.
+     */
     void executionPhaseStarted();
 }
