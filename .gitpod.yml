@@ -8,6 +8,9 @@ github:
 image:
   file: .gitpod.Dockerfile
 
+tasks:
+  - init: ./gradlew assemble
+
 jetbrains:
   intellij:
     prebuilds:
