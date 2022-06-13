@@ -12,3 +12,9 @@ jetbrains:
   intellij:
     prebuilds:
       version: stable
+
+tasks:
+  - init: |
+      echo 'TODO: build project'
+    command: |
+      echo 'TODO: start app'
