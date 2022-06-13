@@ -5,6 +5,9 @@ github:
     # enable for all branches in this repo (defaults to false)
     branches: true
 
+image:
+  file: .gitpod.Dockerfile
+
 jetbrains:
   intellij:
     prebuilds:
