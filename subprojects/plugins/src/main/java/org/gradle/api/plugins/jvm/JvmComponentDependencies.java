@@ -16,21 +16,8 @@
 
 package org.gradle.api.plugins.jvm;
 
-import org.gradle.api.Action;
 import org.gradle.api.Incubating;
-import org.gradle.api.Project;
-import org.gradle.api.artifacts.Dependency;
-import org.gradle.api.artifacts.ExternalModuleDependency;
-import org.gradle.api.artifacts.FileCollectionDependency;
-import org.gradle.api.artifacts.MinimalExternalModuleDependency;
-import org.gradle.api.artifacts.ProjectDependency;
-import org.gradle.api.artifacts.dsl.DependencyFactory;
-import org.gradle.api.artifacts.dsl.DependencyProvider;
-import org.gradle.api.file.FileCollection;
-import org.gradle.api.provider.Provider;
-import org.gradle.api.provider.ProviderConvertible;
-
-import java.util.Map;
+import org.gradle.api.artifacts.dsl.ConfigurationDependencyHandler;
 
 /**
  * This DSL element is used to add dependencies to a component, like {@link JvmTestSuite}.
@@ -38,248 +25,52 @@ import java.util.Map;
  * <ul>
  *     <li><code>implementation</code> dependencies are used at compilation and runtime.</li>
  *     <li><code>compileOnly</code> dependencies are used only at compilation and are not available at runtime.</li>
- *     <li><code>runtimeOnly</code> dependencies are not available at  compilation and are used only at runtime.</li>
+ *     <li><code>runtimeOnly</code> dependencies are not available at compilation and are used only at runtime.</li>
+ *     <li><code>annotationProcessor</code> dependencies are used only at compilation, and are added to the annotation processor classpath</li>
  * </ul>
  *
- * @since 7.3
- *
  * @see org.gradle.api.artifacts.dsl.DependencyHandler For more information.
+ * @since 7.3
  */
 @Incubating
 public interface JvmComponentDependencies {
-
     /**
-     * Add a dependency to the set of implementation dependencies.
+     * Returns a {@link ConfigurationDependencyHandler} to add to the set of implementation dependencies.
      * <p><br>
      * <code>implementation</code> dependencies are used at compilation and runtime.
      *
-     * @param dependencyNotation dependency to add
-     * @see DependencyFactory#createFromCharSequence(CharSequence) Valid dependency notation for this method
      * @since 7.6
+     * @return a {@link ConfigurationDependencyHandler} to add to the set of implementation dependencies
      */
-    void implementation(CharSequence dependencyNotation);
+    ConfigurationDependencyHandler getImplementation();
 
     /**
-     * Add a dependency to the set of implementation dependencies.
-     * <p><br>
-     * <code>implementation</code> dependencies are used at compilation and runtime.
-     *
-     * @param dependencyNotation dependency to add
-     * @param configuration an action to configure the dependency
-     * @see DependencyFactory#createFromCharSequence(CharSequence) Valid dependency notation for this method
-     * @since 7.6
-     */
-    void implementation(CharSequence dependencyNotation, Action<? super ExternalModuleDependency> configuration);
-
-    /**
-     * Add a dependency to the set of implementation dependencies.
-     * <p><br>
-     * <code>implementation</code> dependencies are used at compilation and runtime.
-     *
-     * @param map a map of configuration parameters for the dependency
-     * @see DependencyFactory#createFromMap(Map) Valid dependency notation for this method
-     * @since 7.6
-     */
-    void implementation(Map<String, ?> map);
-
-    /**
-     * Add a dependency to the set of implementation dependencies.
-     * <p><br>
-     * <code>implementation</code> dependencies are used at compilation and runtime.
-     *
-     * @param map a map of configuration parameters for the dependency
-     * @param configuration an action to configure the dependency
-     * @see DependencyFactory#createFromMap(Map) Valid dependency notation for this method
-     * @since 7.6
-     */
-    void implementation(Map<String, ?> map, Action<? super ExternalModuleDependency> configuration);
-
-    /**
-     * Add a dependency to the set of implementation dependencies.
-     * <p><br>
-     * <code>implementation</code> dependencies are used at compilation and runtime.
-     *
-     * @param project project to add as a dependency
-     * @since 7.6
-     */
-    void implementation(Project project);
-
-    /**
-     * Add a dependency to the set of implementation dependencies.
-     * <p><br>
-     * <code>implementation</code> dependencies are used at compilation and runtime.
-     *
-     * @param project project to add as a dependency
-     * @param configuration an action to configure the dependency
-     * @since 7.6
-     */
-    void implementation(Project project, Action<? super ProjectDependency> configuration);
-
-    /**
-     * Add a dependency to the set of implementation dependencies.
-     * <p><br>
-     * <code>implementation</code> dependencies are used at compilation and runtime.
-     *
-     * @param files files to add as a dependency
-     * @since 7.6
-     */
-    void implementation(FileCollection files);
-
-    /**
-     * Add a dependency to the set of implementation dependencies.
-     * <p><br>
-     * <code>implementation</code> dependencies are used at compilation and runtime.
-     *
-     * @param files files to add as a dependency
-     * @param configuration an action to configure the dependency
-     * @since 7.6
-     */
-    void implementation(FileCollection files, Action<? super FileCollectionDependency> configuration);
-
-    /**
-     * Add a dependency to the set of implementation dependencies.
-     * <p><br>
-     * <code>implementation</code> dependencies are used at compilation and runtime.
-     *
-     * @param externalModule external module to add as a dependency
-     * @since 7.6
-     */
-    void implementation(Provider<? extends MinimalExternalModuleDependency> externalModule);
-
-    /**
-     * Add a dependency to the set of implementation dependencies.
-     * <p><br>
-     * <code>implementation</code> dependencies are used at compilation and runtime.
-     *
-     * @param externalModule external module to add as a dependency
-     * @param configuration an action to configure the dependency
-     * @since 7.6
-     */
-    void implementation(Provider<? extends MinimalExternalModuleDependency> externalModule, Action<? super ExternalModuleDependency> configuration);
-
-    /**
-     * Add a dependency to the set of implementation dependencies.
-     * <p><br>
-     * <code>implementation</code> dependencies are used at compilation and runtime.
-     *
-     * @param externalModule external module to add as a dependency
-     * @since 7.6
-     *
-     */
-    void implementation(ProviderConvertible<? extends MinimalExternalModuleDependency> externalModule);
-
-    /**
-     * Add a dependency to the set of implementation dependencies.
-     * <p><br>
-     * <code>implementation</code> dependencies are used at compilation and runtime.
-     *
-     * @param externalModule external module to add as a dependency
-     * @param configuration an action to configure the dependency
-     * @since 7.6
-     */
-    void implementation(ProviderConvertible<? extends MinimalExternalModuleDependency> externalModule, Action<? super ExternalModuleDependency> configuration);
-
-    /**
-     * Add a dependency to the set of implementation dependencies.
-     * <p><br>
-     * <code>implementation</code> dependencies are used at compilation and runtime.
-     *
-     * @param dependency dependency to add
-     * @since 7.6
-     */
-    void implementation(Dependency dependency);
-
-    /**
-     * Add a dependency to the set of implementation dependencies.
-     * <p><br>
-     * <code>implementation</code> dependencies are used at compilation and runtime.
-     *
-     * @param dependency dependency to add
-     * @param configuration an action to configure the dependency
-     * @since 7.6
-     */
-    <D extends Dependency> void implementation(D dependency, Action<? super D> configuration);
-
-    /**
-     * Add a dependency to the set of implementation dependencies.
-     * <p><br>
-     * <code>implementation</code> dependencies are used at compilation and runtime.
-     *
-     * @param dependency dependency to add
-     * @since 7.6
-     */
-    void implementation(DependencyProvider<?> dependency);
-
-    /**
-     * Add a dependency to the set of implementation dependencies.
-     * <p><br>
-     * <code>implementation</code> dependencies are used at compilation and runtime.
-     *
-     * @param dependency dependency to add
-     * @param configuration an action to configure the dependency
-     * @since 7.6
-     */
-    <D extends Dependency> void implementation(DependencyProvider<? extends D> dependency, Action<? super D> configuration);
-
-    /**
-     * Add a dependency to the set of compileOnly dependencies.
+     * Returns a {@link ConfigurationDependencyHandler} to add to the set of compile-only dependencies.
      * <p><br>
      * <code>compileOnly</code> dependencies are used only at compilation and are not available at runtime.
      *
-     * @param dependencyNotation dependency to add
-     * @see org.gradle.api.artifacts.dsl.DependencyHandler Valid dependency notations.
+     * @since 7.6
+     * @return a {@link ConfigurationDependencyHandler} to add to the set of compile-only dependencies
      */
-    void compileOnly(Object dependencyNotation);
-    /**
-     * Add a dependency to the set of compileOnly dependencies with additional configuration.
-     * <p><br>
-     * <code>compileOnly</code> dependencies are used only at compilation and are not available at runtime.
-     *
-     * @param dependencyNotation dependency to add
-     * @param configuration additional configuration for the provided dependency
-     * @see org.gradle.api.artifacts.dsl.DependencyHandler Valid dependency notations.
-     */
-    void compileOnly(Object dependencyNotation, Action<? super Dependency> configuration);
+    ConfigurationDependencyHandler getCompileOnly();
 
     /**
-     * Add a dependency to the set of runtimeOnly dependencies.
+     * Returns a {@link ConfigurationDependencyHandler} to add to the set of runtime-only dependencies.
      * <p><br>
-     * <code>runtimeOnly</code> dependencies are not available at  compilation and are used only at runtime.
+     * <code>runtimeOnly</code> dependencies are not available at compilation and are used only at runtime.
      *
-     * @param dependencyNotation dependency to add
-     * @see org.gradle.api.artifacts.dsl.DependencyHandler Valid dependency notations.
+     * @since 7.6
+     * @return a {@link ConfigurationDependencyHandler} to add to the set of runtime-only dependencies
      */
-    void runtimeOnly(Object dependencyNotation);
-    /**
-     * Add a dependency to the set of runtimeOnly dependencies with additional configuration.
-     * <p><br>
-     * <code>runtimeOnly</code> dependencies are not available at  compilation and are used only at runtime.
-     *
-     * @param dependencyNotation dependency to add
-     * @param configuration additional configuration for the provided dependency
-     * @see org.gradle.api.artifacts.dsl.DependencyHandler Valid dependency notations.
-     */
-    void runtimeOnly(Object dependencyNotation, Action<? super Dependency> configuration);
+    ConfigurationDependencyHandler getRuntimeOnly();
 
     /**
-     * Add a dependency to the set of annotationProcessor dependencies.
+     * Returns a {@link ConfigurationDependencyHandler} to add to the set of annotation processor dependencies.
      * <p><br>
-     * <code>annotationProcessor</code> dependencies containing annotation processors to be run at compile time.
+     * <code>annotationProcessor</code> dependencies are used only at compilation, and are added to the annotation processor classpath.
      *
-     * @param dependencyNotation dependency to add
-     * @see org.gradle.api.artifacts.dsl.DependencyHandler Valid dependency notations.
-     * @since 7.5
+     * @since 7.6
+     * @return a {@link ConfigurationDependencyHandler} to add to the set of annotation processor dependencies
      */
-    void annotationProcessor(Object dependencyNotation);
-    /**
-     * Add a dependency to the set of annotationProcessor dependencies.
-     * <p><br>
-     * <code>annotationProcessor</code> dependencies containing annotation processors to be run at compile time.
-     *
-     * @param dependencyNotation dependency to add
-     * @param configuration additional configuration for the provided dependency
-     * @see org.gradle.api.artifacts.dsl.DependencyHandler Valid dependency notations.
-     * @since 7.5
-     */
-    void annotationProcessor(Object dependencyNotation, Action<? super Dependency> configuration);
+    ConfigurationDependencyHandler getAnnotationProcessor();
 }
