@@ -12,8 +12,3 @@ jetbrains:
   intellij:
     prebuilds:
       version: stable
-
-tasks:
-  - init: ./gradlew assemble
-    command: |
-      echo 'TODO: start app'
