@@ -14,7 +14,6 @@ jetbrains:
       version: stable
 
 tasks:
-  - init: |
-      echo 'TODO: build project'
+  - init: ./gradlew assemble
     command: |
       echo 'TODO: start app'
