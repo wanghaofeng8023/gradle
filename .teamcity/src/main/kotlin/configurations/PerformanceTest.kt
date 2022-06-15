@@ -18,6 +18,7 @@ package configurations
 
 import common.Os
 import common.applyPerformanceTestSettings
+import common.buildCommitBaselineDistributionDependency
 import common.buildToolGradleParameters
 import common.checkCleanM2AndAndroidUserHome
 import common.gradleWrapper
@@ -92,6 +93,7 @@ class PerformanceTest(
         }
 
         applyDefaultDependencies(model, this, !performanceTestBuildSpec.withoutDependencies)
+        dependencies.buildCommitBaselineDistributionDependency(BuildCommitBaselineDistribution.buildTypeId(model))
     }
 )
 

@@ -194,6 +194,17 @@ fun Dependencies.compileAllDependency(compileAllId: String) {
     }
 }
 
+fun Dependencies.buildCommitBaselineDistributionDependency(buildCommitBaselineDistributionId: String) {
+    artifacts(RelativeId(buildCommitBaselineDistributionId)) {
+        id = "ARTIFACT_DEPENDENCY_$buildCommitBaselineDistributionId"
+        cleanDestination = true
+        artifactRules = """
+            |distributions/gradle-*.zip => distributions
+            |distributions/gradle-tooling-api-*.jar => distributions
+            |""".trimMargin()
+    }
+}
+
 fun functionalTestExtraParameters(buildScanTag: String, os: Os, arch: Arch, testJvmVersion: String, testJvmVendor: String): String {
     val buildScanValues = mapOf(
         "coverageOs" to os.name.lowercase(),
