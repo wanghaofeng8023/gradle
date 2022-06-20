@@ -41,18 +41,18 @@ class FinalizerTaskIntegrationTest extends AbstractIntegrationSpec {
             }
         '''
 
-        expect:
-        fails 'entryPoint'
-
-        and:
-        failureDescriptionContains 'Misdetected cycle between :finalized and :finalized.'
-
-        // TODO: should be
 //        expect:
-//        succeeds 'entryPoint'
+//        fails 'entryPoint'
 //
 //        and:
-//        result.assertTaskOrder ':entryPoint', ':finalized', ':finalizer'
+//        failureDescriptionContains 'Misdetected cycle between :finalized and :finalized.'
+
+        // TODO: should be
+        expect:
+        succeeds 'entryPoint'
+
+        and:
+        result.assertTaskOrder ':entryPoint', ':finalized', ':finalizer'
     }
 
     void 'finalizer tasks are scheduled as expected (#requestedTasks)'() {

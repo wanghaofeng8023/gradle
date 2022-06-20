@@ -143,6 +143,10 @@ public abstract class Node {
         NodeGroup newGroup = group;
         for (Node predecessor : getDependencyPredecessors()) {
             if (predecessor.getGroup() instanceof HasFinalizers) {
+                FinalizerGroup finalizerGroup = predecessor.getGroup().asFinalizer();
+                if (finalizerGroup != null && getFinalizers().contains(finalizerGroup.getNode())) {
+                    continue;
+                }
                 newGroup = maybeInheritGroupAsFinalizerDependency((HasFinalizers) predecessor.getGroup(), newGroup);
             }
         }
