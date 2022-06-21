@@ -26,7 +26,7 @@ import static org.gradle.integtests.fixtures.executer.TaskOrderSpecs.exact
 
 class FinalizerTaskIntegrationTest extends AbstractIntegrationSpec {
 
-    @ToBeImplemented("https://github.com/gradle/gradle/issues/21000")
+    @Issue("https://github.com/gradle/gradle/issues/21000")
     def "finalizer task can depend on finalized task"() {
         given:
         buildFile '''
@@ -42,17 +42,10 @@ class FinalizerTaskIntegrationTest extends AbstractIntegrationSpec {
         '''
 
         expect:
-        fails 'entryPoint'
+        succeeds 'entryPoint'
 
         and:
-        failureDescriptionContains 'Misdetected cycle between :finalized and :finalized.'
-
-        // TODO: should be
-//        expect:
-//        succeeds 'entryPoint'
-//
-//        and:
-//        result.assertTaskOrder ':entryPoint', ':finalized', ':finalizer'
+        result.assertTaskOrder ':entryPoint', ':finalized', ':finalizer'
     }
 
     void 'finalizer tasks are scheduled as expected (#requestedTasks)'() {

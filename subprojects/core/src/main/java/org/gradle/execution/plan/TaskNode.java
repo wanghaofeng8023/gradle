@@ -105,7 +105,7 @@ public abstract class TaskNode extends Node {
     public Iterable<Node> getAllSuccessors() {
         return Iterables.concat(
             shouldSuccessors,
-            getGroup().getSuccessors(),
+            getGroup().getSuccessors(this),
             mustSuccessors,
             super.getAllSuccessors()
         );
@@ -114,7 +114,7 @@ public abstract class TaskNode extends Node {
     @Override
     public Iterable<Node> getHardSuccessors() {
         return Iterables.concat(
-            getGroup().getSuccessors(),
+            getGroup().getSuccessors(this),
             mustSuccessors,
             super.getHardSuccessors()
         );
@@ -125,7 +125,7 @@ public abstract class TaskNode extends Node {
         return Iterables.concat(
             super.getAllSuccessorsInReverseOrder(),
             mustSuccessors.descendingSet(),
-            getGroup().getSuccessorsInReverseOrder(),
+            getGroup().getSuccessorsInReverseOrder(this),
             shouldSuccessors.descendingSet()
         );
     }

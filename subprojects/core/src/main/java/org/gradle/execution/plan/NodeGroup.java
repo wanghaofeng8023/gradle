@@ -71,11 +71,11 @@ public abstract class NodeGroup {
     /**
      * Returns the set of nodes which must complete before any node in this group can start.
      */
-    public Iterable<? extends Node> getSuccessors() {
+    public Iterable<? extends Node> getSuccessors(Node node) {
         return Collections.emptyList();
     }
 
-    public Iterable<? extends Node> getSuccessorsInReverseOrder() {
+    public Iterable<? extends Node> getSuccessorsInReverseOrder(Node node) {
         return Collections.emptyList();
     }
 

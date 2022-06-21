@@ -64,10 +64,6 @@ public class FinalizerGroup extends HasFinalizers {
         return delegate;
     }
 
-    public Collection<Node> getFinalizedNodes() {
-        return node.getFinalizingSuccessors();
-    }
-
     @Nullable
     @Override
     public OrdinalGroup asOrdinal() {
@@ -86,13 +82,25 @@ public class FinalizerGroup extends HasFinalizers {
     }
 
     @Override
-    public Collection<Node> getSuccessors() {
-        return node.getFinalizingSuccessors();
+    public Collection<Node> getSuccessors(Node node) {
+        if (node == this.node) {
+            return this.node.getFinalizingSuccessors();
+        }
+        return filterSuccessors(this.node.getFinalizingSuccessors());
     }
 
     @Override
-    public Collection<Node> getSuccessorsInReverseOrder() {
-        return node.getFinalizingSuccessorsInReverseOrder();
+    public Collection<Node> getSuccessorsInReverseOrder(Node node) {
+        if (node == this.node) {
+            return this.node.getFinalizingSuccessorsInReverseOrder();
+        }
+        return filterSuccessors(this.node.getFinalizingSuccessorsInReverseOrder());
+    }
+
+    private Collection<Node> filterSuccessors(Set<Node> successors) {
+        Set<Node> filteredSuccessors = new LinkedHashSet<>(successors);
+        filteredSuccessors.removeAll(members);
+        return filteredSuccessors;
     }
 
     @Override
@@ -127,7 +135,7 @@ public class FinalizerGroup extends HasFinalizers {
 
         // Otherwise, wait for all finalized nodes to complete
         boolean isAnyExecuted = false;
-        for (Node finalized : getFinalizedNodes()) {
+        for (Node finalized : getSuccessors(node)) {
             if (!finalized.isComplete()) {
                 return Node.DependenciesState.NOT_COMPLETE;
             }
