@@ -90,16 +90,16 @@ public class NativeServices extends DefaultServiceRegistry implements ServiceReg
         FILE_SYSTEM_WATCHING {
             @Override
             public boolean initialize(File nativeBaseDir, boolean useNativeIntegrations) {
-                if (useNativeIntegrations) {
-                    try {
-                        FileEvents.init(nativeBaseDir);
-                        LOGGER.info("Initialized file system watching services in: {}", nativeBaseDir);
-                        return true;
-                    } catch (NativeIntegrationUnavailableException ex) {
-                        LOGGER.debug("Native file system watching is not available for this operating system.", ex);
-                        return false;
-                    }
-                }
+//                if (useNativeIntegrations) {
+//                    try {
+//                        FileEvents.init(nativeBaseDir);
+//                        LOGGER.info("Initialized file system watching services in: {}", nativeBaseDir);
+//                        return true;
+//                    } catch (NativeIntegrationUnavailableException ex) {
+//                        LOGGER.debug("Native file system watching is not available for this operating system.", ex);
+//                        return false;
+//                    }
+//                }
                 return false;
             }
         },
