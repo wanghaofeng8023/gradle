@@ -58,11 +58,13 @@ public class DefaultArtifactIdentifier implements ArtifactIdentifier {
         return type;
     }
 
+    @Nullable
     @Override
     public String getExtension() {
         return extension;
     }
 
+    @Nullable
     @Override
     public String getClassifier() {
         return classifier;
