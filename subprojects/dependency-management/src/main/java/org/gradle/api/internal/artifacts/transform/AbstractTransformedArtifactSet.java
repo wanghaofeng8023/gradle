@@ -19,6 +19,7 @@ package org.gradle.api.internal.artifacts.transform;
 import com.google.common.collect.ImmutableList;
 import org.gradle.api.Action;
 import org.gradle.api.artifacts.component.ComponentIdentifier;
+import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
 import org.gradle.api.capabilities.Capability;
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.artifact.EndCollection;
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.artifact.ResolvableArtifact;
@@ -40,6 +41,7 @@ import java.util.List;
  */
 public abstract class AbstractTransformedArtifactSet implements ResolvedArtifactSet, FileCollectionInternal.Source {
     private final CalculatedValueContainer<ImmutableList<ResolvedArtifactSet.Artifacts>, CalculateArtifacts> result;
+    private final ComponentIdentifier componentIdentifier;
 
     public AbstractTransformedArtifactSet(
         ComponentIdentifier componentIdentifier,
@@ -50,6 +52,7 @@ public abstract class AbstractTransformedArtifactSet implements ResolvedArtifact
         ExtraExecutionGraphDependenciesResolverFactory dependenciesResolverFactory,
         CalculatedValueContainerFactory calculatedValueContainerFactory
     ) {
+        this.componentIdentifier = componentIdentifier;
         TransformUpstreamDependenciesResolver dependenciesResolver = dependenciesResolverFactory.create(componentIdentifier, transformation);
         ImmutableList.Builder<BoundTransformationStep> builder = ImmutableList.builder();
         transformation.visitTransformationSteps(transformationStep -> builder.add(new BoundTransformationStep(transformationStep, dependenciesResolver.dependenciesFor(transformationStep))));
@@ -59,6 +62,7 @@ public abstract class AbstractTransformedArtifactSet implements ResolvedArtifact
 
     public AbstractTransformedArtifactSet(CalculatedValueContainer<ImmutableList<ResolvedArtifactSet.Artifacts>, CalculateArtifacts> result) {
         this.result = result;
+        this.componentIdentifier = null;
     }
 
     public CalculatedValueContainer<ImmutableList<Artifacts>, CalculateArtifacts> getResult() {
@@ -84,6 +88,9 @@ public abstract class AbstractTransformedArtifactSet implements ResolvedArtifact
 
     @Override
     public void visitDependencies(TaskDependencyResolveContext context) {
+        if (componentIdentifier instanceof ModuleComponentIdentifier) {
+            return;
+        }
         result.visitDependencies(context);
     }
 

@@ -74,7 +74,7 @@ allprojects {
     artifacts {
         implementation producer.output
     }
-    task resolve (type: ShowFileCollection) {
+    task resolve(type: ShowFileCollection) {
         def view = configurations.implementation.incoming.artifactView {
             attributes.attribute(color, 'green')
         }.files
