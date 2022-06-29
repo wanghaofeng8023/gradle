@@ -84,7 +84,7 @@ class DefaultExecutionPlanParallelTest extends AbstractExecutionPlanSpec {
         def dependencies = nodes(options.dependsOn)
         def preExecute = nodes(options.preNodes)
         def postExecute = nodes(options.postNodes)
-        def node = new TestNode(name, dependencies, preExecute, postExecute)
+        def node = new TestNode(name, dependencies, preExecute, postExecute, options.failure)
         return node
     }
 
@@ -1705,7 +1705,70 @@ class DefaultExecutionPlanParallelTest extends AbstractExecutionPlanSpec {
         assertAllWorkComplete()
     }
 
-    def "node can provide additional dependencies immediately after execution"() {
+    def "node can provide pre-execution dependency that is already scheduled"() {
+        def dep = node("dep")
+        def preNode1 = node("pre1", dependsOn: dep)
+        def preNode2 = node("pre2")
+        def target = node("target", preNodes: [preNode1, preNode2])
+        def entry = node("entry", dependsOn: [preNode1, target])
+
+        when:
+        addToGraph(dep, target, preNode1, entry)
+        populateGraph()
+
+        then:
+        scheduledNodes == [dep, target, preNode1, entry]
+        assertNodesReady(dep, preNode2)
+        assertNodeReady(preNode1)
+        assertNodeReady(target)
+        assertNodeReadyAndNoMoreToStart(entry)
+        assertAllWorkComplete()
+    }
+
+    def "does not run node whose pre-execution dependency fails"() {
+        def dep = node("dep")
+        def preNode1 = node("pre1")
+        def preNode2 = node("pre2", failure: new RuntimeException())
+        def target = node("target", dependsOn: dep, preNodes: [preNode1, preNode2])
+        def entry = node("entry", dependsOn: target)
+
+        when:
+        executionPlan.continueOnFailure = continueOnFailure
+        addToGraph(dep, target, entry)
+        populateGraph()
+
+        then:
+        scheduledNodes == [dep, target, entry]
+        assertNodeReady(dep)
+        assertNodesReady(preNode1, preNode2)
+        assertAllWorkComplete(continueOnFailure)
+
+        where:
+        continueOnFailure << [false, true]
+    }
+
+    def "does not run pre-execution dependencies when some other dependency fails"() {
+        def dep = node("dep", failure: new RuntimeException())
+        def preNode1 = node("pre1")
+        def preNode2 = node("pre2")
+        def target = node("target", dependsOn: dep, preNodes: [preNode1, preNode2])
+        def entry = node("entry", dependsOn: target)
+
+        when:
+        executionPlan.continueOnFailure = continueOnFailure
+        addToGraph(dep, target, entry)
+        populateGraph()
+
+        then:
+        scheduledNodes == [dep, target, entry]
+        assertNodeReady(dep)
+        assertAllWorkComplete(continueOnFailure)
+
+        where:
+        continueOnFailure << [false, true]
+    }
+
+    def "node can provide additional nodes to run immediately after execution"() {
         def postNode1 = node("post1")
         def postNode2 = node("post2")
         def target = node("target", postNodes: [postNode1, postNode2])
@@ -1721,6 +1784,65 @@ class DefaultExecutionPlanParallelTest extends AbstractExecutionPlanSpec {
         assertNodesReady(postNode1, postNode2)
         assertNodeReadyAndNoMoreToStart(entry)
         assertAllWorkComplete()
+    }
+
+    def "node can provide post-execution node that is already scheduled"() {
+        def postNode1 = node("post1")
+        def postNode2 = node("post2", dependsOn: postNode1)
+        def target = node("target", postNodes: [postNode1, postNode2])
+        def entry = node("entry", dependsOn: [postNode1, target])
+
+        when:
+        addToGraph(target, postNode1, entry)
+        populateGraph()
+
+        then:
+        scheduledNodes == [target, postNode1, entry]
+        assertNodesReady(target, postNode1)
+        assertNodeReady(postNode2)
+        assertNodeReadyAndNoMoreToStart(entry)
+        assertAllWorkComplete()
+    }
+
+    def "does not run dependent nodes when post-execution node fails"() {
+        def postNode1 = node("post1")
+        def postNode2 = node("post2", failure: new RuntimeException())
+        def target = node("target", postNodes: [postNode1, postNode2])
+        def entry = node("entry", dependsOn: target)
+
+        when:
+        executionPlan.continueOnFailure = continueOnFailure
+        addToGraph(target, entry)
+        populateGraph()
+
+        then:
+        scheduledNodes == [target, entry]
+        assertNodeReady(target)
+        assertNodesReady(postNode1, postNode2)
+        assertAllWorkComplete(continueOnFailure)
+
+        where:
+        continueOnFailure << [false, true]
+    }
+
+    def "does not run post-execution nodes when node fails"() {
+        def postNode1 = node("post1")
+        def postNode2 = node("post2")
+        def target = node("target", postNodes: [postNode1, postNode2], failure: new RuntimeException())
+        def entry = node("entry", dependsOn: target)
+
+        when:
+        executionPlan.continueOnFailure = continueOnFailure
+        addToGraph(target, entry)
+        populateGraph()
+
+        then:
+        scheduledNodes == [target, entry]
+        assertNodeReady(target)
+        assertAllWorkComplete(continueOnFailure)
+
+        where:
+        continueOnFailure << [false, true]
     }
 
     private void tasksAreNotExecutedInParallel(Task first, Task second) {

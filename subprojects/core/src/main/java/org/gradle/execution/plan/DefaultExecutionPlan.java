@@ -440,6 +440,11 @@ public class DefaultExecutionPlan implements ExecutionPlan, WorkSource<Node> {
                     return Selection.of(node);
                 }
             }
+            if (node.isComplete()) {
+                // Is already complete
+                // - is a pre-execution node that is also scheduled but not yet executed
+                executionQueue.remove();
+            }
             // Else, node is not yet complete
             // - its dependencies are not yet complete
             // - it is waiting for some external event such as completion of a task in another build
