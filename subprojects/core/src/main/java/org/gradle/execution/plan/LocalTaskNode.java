@@ -213,6 +213,22 @@ public class LocalTaskNode extends TaskNode {
         return resolveMutationsNode;
     }
 
+    @Override
+    public void markFailedDueToDependencies(Consumer<Node> completionAction) {
+        super.markFailedDueToDependencies(completionAction);
+        if (!resolveMutationsNode.isComplete()) {
+            resolveMutationsNode.markFailedDueToDependencies(completionAction);
+        }
+    }
+
+    @Override
+    public void cancelExecution(Consumer<Node> completionAction) {
+        super.cancelExecution(completionAction);
+        if (!resolveMutationsNode.isComplete()) {
+            resolveMutationsNode.cancelExecution(completionAction);
+        }
+    }
+
     public void resolveMutations() {
         final LocalTaskNode taskNode = this;
         final TaskInternal task = getTask();

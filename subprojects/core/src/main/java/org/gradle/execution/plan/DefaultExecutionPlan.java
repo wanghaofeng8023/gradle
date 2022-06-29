@@ -452,7 +452,7 @@ public class DefaultExecutionPlan implements ExecutionPlan, WorkSource<Node> {
         if (executionQueue.isEmpty()) {
             return Selection.noMoreWorkToStart();
         } else {
-            // Some nodes are yet to start
+            // No nodes are able to start
             // - they are ready to execute but cannot acquire the resources they need to start
             // - they are waiting for their dependencies to complete
             // - they are waiting for some external event
