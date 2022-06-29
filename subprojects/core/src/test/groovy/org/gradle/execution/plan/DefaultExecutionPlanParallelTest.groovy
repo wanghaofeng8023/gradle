@@ -16,7 +16,6 @@
 
 package org.gradle.execution.plan
 
-
 import org.gradle.api.DefaultTask
 import org.gradle.api.Task
 import org.gradle.api.file.FileCollection
@@ -43,7 +42,6 @@ import org.gradle.util.internal.ToBeImplemented
 import spock.lang.Issue
 
 import javax.annotation.Nullable
-import javax.swing.ListModel
 import java.util.function.Consumer
 
 import static org.gradle.internal.snapshot.CaseSensitivity.CASE_SENSITIVE
