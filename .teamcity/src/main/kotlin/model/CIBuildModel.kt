@@ -11,6 +11,7 @@ import common.Os
 import common.VersionedSettingsBranch
 import common.toCapitalized
 import configurations.BaseGradleBuildType
+import configurations.BuildCommitBaselineDistribution
 import configurations.BuildDistributions
 import configurations.CheckLinks
 import configurations.CompileAllProduction
@@ -90,7 +91,7 @@ data class CIBuildModel(
             StageNames.READY_FOR_NIGHTLY,
             trigger = Trigger.eachCommit,
             specificBuilds = listOf(
-                SpecificBuild.SmokeTestsMinJavaVersion
+                SpecificBuild.SmokeTestsMinJavaVersion, SpecificBuild.BuildCommitBaselineDistribution
             ),
             functionalTests = listOf(
                 TestCoverage(5, TestType.quickFeedbackCrossVersion, Os.LINUX, JvmCategory.MIN_VERSION, QUICK_CROSS_VERSION_BUCKETS.size),
@@ -303,19 +304,16 @@ enum class PerformanceTestType(
     per_commit(
         displayName = "Performance Regression Test",
         timeout = 420,
-        defaultBaselines = "defaults",
         channel = "commits"
     ),
     per_day(
         displayName = "Slow Performance Regression Test",
         timeout = 420,
-        defaultBaselines = "defaults",
         channel = "commits"
     ),
     per_week(
         displayName = "Performance Experiment",
         timeout = 420,
-        defaultBaselines = "defaults",
         channel = "experiments"
     ),
     flakinessDetection(
@@ -335,7 +333,6 @@ enum class PerformanceTestType(
     adHoc(
         displayName = "AdHoc Performance Test",
         timeout = 30,
-        defaultBaselines = "none",
         channel = "adhoc",
         extraParameters = "--checks none"
     );
@@ -356,6 +353,11 @@ enum class SpecificBuild {
     SanityCheck {
         override fun create(model: CIBuildModel, stage: Stage): BaseGradleBuildType {
             return SanityCheck(model, stage)
+        }
+    },
+    BuildCommitBaselineDistribution {
+        override fun create(model: CIBuildModel, stage: Stage): BaseGradleBuildType {
+            return BuildCommitBaselineDistribution(model, stage)
         }
     },
     BuildDistributions {
