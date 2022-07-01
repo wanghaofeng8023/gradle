@@ -113,6 +113,8 @@ class ChangesDuringTheBuildFileSystemWatchingIntegrationTest extends AbstractFil
                 inputs.file(inputFile)
                 outputs.file(outputFile)
                 doLast {
+                    // Make sure the creation event for the build directory arrived
+                    Thread.sleep(40)
                     outputFile.text = inputFile.text
                 }
             }
