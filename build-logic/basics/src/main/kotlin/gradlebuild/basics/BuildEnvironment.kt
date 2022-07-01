@@ -20,11 +20,34 @@ import gradlebuild.basics.BuildParams.CI_ENVIRONMENT_VARIABLE
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
-import org.gradle.api.provider.Provider
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.provider.Property
 import org.gradle.internal.os.OperatingSystem
 
 
-fun Project.repoRoot() = layout.projectDirectory.parentOrRoot()
+abstract class BuildEnvironmentExtension {
+    abstract val repoRoot: DirectoryProperty
+    abstract val gitCommitId: Property<String>
+    abstract val gitBranch: Property<String>
+}
+
+
+/**
+ * Get a property cached in `BuildEnvironmentExtension`, or query the property via heavy I/O operations then put it into cache.
+ */
+private
+fun <T> Project.getCachedPropertyOrQuery(propertyGetter: BuildEnvironmentExtension.() -> Property<T>, valueSupplier: Project.() -> T): T {
+    val extension = rootProject.extensions.run {
+        findByType(BuildEnvironmentExtension::class.java) ?: create("buildEnvironment", BuildEnvironmentExtension::class.java)
+    }
+    if (!extension.propertyGetter().isPresent) {
+        extension.propertyGetter().set(valueSupplier())
+    }
+    return extension.propertyGetter().get()
+}
+
+
+fun Project.repoRoot(): Directory = getCachedPropertyOrQuery(BuildEnvironmentExtension::repoRoot) { layout.projectDirectory.parentOrRoot() }
 
 
 private
@@ -46,17 +69,17 @@ fun Project.releasedVersionsFile() = repoRoot().file("released-versions.json")
 /**
  * We use command line Git instead of JGit, because JGit's [Repository.resolve] does not work with worktrees.
  */
-fun Project.currentGitBranch() = git(layout.projectDirectory, "rev-parse", "--abbrev-ref", "HEAD")
+fun Project.currentGitBranchViaFileSystemQuery() = getCachedPropertyOrQuery(BuildEnvironmentExtension::gitBranch) { git("rev-parse", "--abbrev-ref", "HEAD") }
 
 
-fun Project.currentGitCommit() = git(layout.projectDirectory, "rev-parse", "HEAD")
+fun Project.currentGitCommitViaFileSystemQuery() = getCachedPropertyOrQuery(BuildEnvironmentExtension::gitCommitId) { git("rev-parse", "HEAD") }
 
 
 @Suppress("UnstableApiUsage")
-private
-fun Project.git(checkoutDir: Directory, vararg args: String): Provider<String> {
+fun Project.git(vararg args: String): String {
+    val projectDir = layout.projectDirectory.asFile
     val execOutput = providers.exec {
-        workingDir = checkoutDir.asFile
+        workingDir = projectDir
         isIgnoreExitValue = true
         commandLine = listOf("git", *args)
         if (OperatingSystem.current().isWindows) {
@@ -66,15 +89,15 @@ fun Project.git(checkoutDir: Directory, vararg args: String): Provider<String> {
     return execOutput.result.zip(execOutput.standardOutput.asBytes) { execResult, output ->
         when {
             execResult.exitValue == 0 -> String(output).trim()
-            checkoutDir.asFile.resolve(".git/HEAD").exists() -> {
+            projectDir.resolve(".git/HEAD").exists() -> {
                 // Read commit id directly from filesystem
-                val headRef = checkoutDir.asFile.resolve(".git/HEAD").readText()
+                val headRef = projectDir.resolve(".git/HEAD").readText()
                     .replace("ref: ", "").trim()
-                checkoutDir.asFile.resolve(".git/$headRef").readText().trim()
+                projectDir.resolve(".git/$headRef").readText().trim()
             }
             else -> "<unknown>" // It's a source distribution, we don't know.
         }
-    }
+    }.get()
 }
 
 

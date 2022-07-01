@@ -19,8 +19,10 @@ import gradlebuild.basics.BuildEnvironment.isCiServer
 import gradlebuild.basics.BuildEnvironment.isCodeQl
 import gradlebuild.basics.BuildEnvironment.isGhActions
 import gradlebuild.basics.BuildEnvironment.isTravis
+import gradlebuild.basics.buildBranch
 import gradlebuild.basics.environmentVariable
 import gradlebuild.basics.kotlindsl.execAndGetStdout
+import gradlebuild.basics.logicalBranch
 import gradlebuild.basics.predictiveTestSelectionEnabled
 import gradlebuild.basics.testDistributionEnabled
 import gradlebuild.buildscan.tasks.ExtractCheckstyleBuildScanData
@@ -73,7 +75,7 @@ extractCheckstyleAndCodenarcData()
 extractWatchFsData()
 
 project.the<ModuleIdentityExtension>().apply {
-    if (logicalBranch.get() != gradleBuildBranch.get()) {
+    if (logicalBranch.get() != buildBranch.get()) {
         buildScan?.tag("PRE_TESTED_COMMIT")
     }
 }
