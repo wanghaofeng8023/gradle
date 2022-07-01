@@ -34,7 +34,6 @@ import org.gradle.util.GradleVersion
 import org.gradle.util.Requires
 import org.gradle.util.TestPrecondition
 import org.junit.Rule
-import spock.lang.IgnoreRest
 import spock.lang.Issue
 
 import static org.gradle.test.matchers.UserAgentMatcher.matchesNameAndVersion
@@ -125,7 +124,6 @@ class ToolingApiRemoteIntegrationTest extends AbstractIntegrationSpec {
         file("wrapper/dists/custom-dist").assertIsDir().listFiles().size() == 1
     }
 
-    @IgnoreRest // TODO remove
     @Issue('https://github.com/gradle/gradle/issues/21137')
     def "respects wrapper configuration updates between invocations"() {
         given:
