@@ -367,7 +367,78 @@ abstract class AbstractKotlinScriptModelCrossVersionTest extends ToolingApiSpeci
                     null, null, [], [], lenient, explicitlyRequestPreparationTasks
                 )
             )
+        }.tap { model ->
+            def withDups = model.scriptModels.entrySet().collect { entry ->
+                def scriptModel = entry.value
+                def mapped = new ScriptModelDuplicates()
+                mapped.script = entry.key
+                mapped.classPathDuplicates = findDuplicatedFilenames(scriptModel.classPath.findAll { it.isFile() })
+                mapped.sourcePathDuplicates = findDuplicatedFilenames(scriptModel.sourcePath.findAll { it.isFile() })
+                mapped.classPathInSourcePath = new ArrayList<>(scriptModel.sourcePath)
+                mapped.classPathInSourcePath.retainAll(scriptModel.classPath)
+                if (mapped.isEmpty()) {
+                    return null
+                } else {
+                    return mapped
+                }
+            }.findAll { it != null }
+
+            if (!withDups.isEmpty()) {
+                def messageWriter = new StringWriter()
+                def writer = new PrintWriter(messageWriter)
+                writer.println 'Duplicate entries found in script models'
+                writer.println '-----------------------------------------------------'
+                withDups.each { dups ->
+                    writer.println dups.script
+                    if (!dups.classPathDuplicates.isEmpty()) {
+                        writer.println ''
+                        writer.println 'CLASSPATH DUPLICATES'
+                        dups.classPathDuplicates.each { writer.println "  $it" }
+                    }
+                    if (!dups.sourcePathDuplicates.isEmpty()) {
+                        writer.println ''
+                        writer.println 'SOURCEPATH DUPLICATES'
+                        dups.sourcePathDuplicates.each { writer.println "  $it" }
+                    }
+                    if (!dups.classPathInSourcePath.isEmpty()) {
+                        writer.println ''
+                        writer.println 'CLASSPATH IN SOURCEPATH DUPLICATES'
+                        dups.classPathInSourcePath.each { writer.println "  $it" }
+                    }
+                    writer.println ''
+                    writer.println 'CLASSPATH'
+                    model.scriptModels.get(dups.script).classPath.each {
+                        writer.println "  $it"
+                    }
+                    writer.println ''
+                    writer.println 'SOURCEPATH'
+                    model.scriptModels.get(dups.script).sourcePath.each {
+                        writer.println "  $it"
+                    }
+                    writer.println '-----------------------------------------------------'
+                }
+                throw new Exception(messageWriter.toString())
+            }
         }
+    }
+
+    class ScriptModelDuplicates {
+        File script
+        List<String> classPathDuplicates
+        List<String> sourcePathDuplicates
+        List<File> classPathInSourcePath
+
+        boolean isEmpty() {
+            return classPathDuplicates.isEmpty() && sourcePathDuplicates.isEmpty() && classPathInSourcePath.isEmpty()
+        }
+    }
+
+    private List<String> findDuplicatedFilenames(List<File> files) {
+        return files
+            .collect { it.name }
+            .countBy { it }
+            .findAll { it.value > 1 }
+            .collect { it.key }
     }
 
     protected static List<File> canonicalClasspathOf(KotlinDslScriptsModel model, File script) {
