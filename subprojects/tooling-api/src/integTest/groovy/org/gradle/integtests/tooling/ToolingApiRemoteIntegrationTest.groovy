@@ -34,6 +34,7 @@ import org.gradle.util.GradleVersion
 import org.gradle.util.Requires
 import org.gradle.util.TestPrecondition
 import org.junit.Rule
+import spock.lang.IgnoreRest
 import spock.lang.Issue
 
 import static org.gradle.test.matchers.UserAgentMatcher.matchesNameAndVersion
@@ -122,6 +123,43 @@ class ToolingApiRemoteIntegrationTest extends AbstractIntegrationSpec {
 
         then:
         file("wrapper/dists/custom-dist").assertIsDir().listFiles().size() == 1
+    }
+
+    @IgnoreRest // TODO remove
+    @Issue('https://github.com/gradle/gradle/issues/21137')
+    def "respects wrapper configuration updates between invocations"() {
+        given:
+        server.expect(server.get("/custom-dist.zip").sendFile(distribution.binDistribution))
+        server.expect(server.get("/another-dist.zip").sendFile(distribution.binDistribution))
+        file("gradle/wrapper/gradle-wrapper.properties") << """
+            distributionBase=PROJECT
+            distributionPath=wrapper/dists
+            distributionUrl=http\\://localhost:${server.port}/custom-dist.zip
+            zipStoreBase=PROJECT
+            zipStorePath=wrapper/dists
+        """
+        toolingApi.withConnector { GradleConnector connector -> connector.useBuildDistribution() }
+
+        when:
+        toolingApi.withConnection { connection ->
+            // run task
+            connection.newBuild().forTasks("help").run()
+            // update wrapper properties
+
+            file("gradle/wrapper/gradle-wrapper.properties") << """
+distributionBase=PROJECT
+distributionPath=wrapper/dists
+distributionUrl=http\\://localhost:${server.port}/another-dist.zip
+zipStoreBase=PROJECT
+zipStorePath=wrapper/dists
+"""
+            // run task again
+            connection.newBuild().forTasks("help").run()
+        }
+
+        then:
+        file("wrapper/dists/custom-dist").assertIsDir().listFiles().size() == 1
+        file("wrapper/dists/another-dist").assertIsDir().listFiles().size() == 1
     }
 
     @Issue('https://github.com/gradle/gradle-private/issues/1537')
